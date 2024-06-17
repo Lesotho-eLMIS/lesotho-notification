@@ -27,6 +27,7 @@ import javax.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "notifications")
@@ -45,6 +46,10 @@ public class Notification extends BaseEntity {
 
   @Getter
   private Boolean important;
+
+  @Getter
+  @Setter
+  private Boolean isRead;
   
   @Column(columnDefinition = "timestamp with time zone", nullable = false)
   @Getter
@@ -57,11 +62,13 @@ public class Notification extends BaseEntity {
    * @param messages messages list
    * @param important important flag
    */
-  public Notification(UUID userId, List<NotificationMessage> messages, Boolean important) {
+  public Notification(UUID userId, List<NotificationMessage> messages, Boolean important, 
+      Boolean isRead) {
     this.userId = userId;
     this.messages = messages;
     this.messages.forEach(notificationMessage -> notificationMessage.setNotification(this));
     this.important = important;
+    this.isRead = isRead;
     this.createdDate = ZonedDateTime.now();
   }
 
@@ -72,7 +79,8 @@ public class Notification extends BaseEntity {
    * @return new notification
    */
   public static Notification newInstance(Importer importer) {
-    return new Notification(importer.getUserId(), importer.getMessages(), importer.getImportant());
+    return new Notification(importer.getUserId(), importer.getMessages(), 
+      importer.getImportant(), importer.getIsRead());
   }
 
   /**
@@ -81,9 +89,11 @@ public class Notification extends BaseEntity {
    * @param exporter exporter to export to
    */
   public void export(Exporter exporter) {
+    exporter.setId(getId());
     exporter.setUserId(userId);
     exporter.setMessages(messages);
     exporter.setImportant(important);
+    exporter.setIsRead(isRead);
     exporter.setCreatedDate(createdDate);
   }
   
@@ -94,15 +104,21 @@ public class Notification extends BaseEntity {
     List<NotificationMessage> getMessages();
     
     Boolean getImportant();
+
+    Boolean getIsRead();
   }
 
   public interface Exporter {
+
+    void setId(UUID id);
 
     void setUserId(UUID userId);
 
     void setMessages(List<NotificationMessage> messages);
     
     void setImportant(Boolean important);
+
+    void setIsRead(Boolean isRead);
     
     void setCreatedDate(ZonedDateTime createdDate);
   }

@@ -28,6 +28,7 @@ public class NotificationDataBuilder {
   private UUID userId;
   private List<NotificationMessage> messages;
   private Boolean important;
+  private Boolean isRead;
 
   /**
    * Default constructor.
@@ -36,6 +37,7 @@ public class NotificationDataBuilder {
     userId = UUID.randomUUID();
     messages = new ArrayList<>();
     important = false;
+    isRead = false;
   }
 
   public NotificationDataBuilder withUserId(UUID userId) {
@@ -77,7 +79,7 @@ public class NotificationDataBuilder {
    * @return new notification
    */
   public Notification buildAsNew() {
-    return new Notification(userId, messages, important);
+    return new Notification(userId, messages, important, isRead);
   }
 
   /**

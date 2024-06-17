@@ -93,6 +93,25 @@ public final class SearchParams {
   }
 
   /**
+   * Parses String value into {@link Boolean} based on given key.
+   * If format is wrong, default to false.
+   *
+   * @param key key for value be parsed into Boolean
+   * @return Boolean
+   */
+  public Boolean getBoolean(String key) {
+    String value = getFirst(key);
+    
+    if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+      return Boolean.parseBoolean(value);
+    } else {
+      //default to false
+      return Boolean.parseBoolean("false");
+    }
+  }
+
+
+  /**
    * Parses String value into {@link UUID} based on given key.
    * If format is wrong {@link ValidationException} will be thrown.
    *

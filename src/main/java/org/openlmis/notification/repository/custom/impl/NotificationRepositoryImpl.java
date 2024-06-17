@@ -81,6 +81,7 @@ public class NotificationRepositoryImpl
     predicate = addEqualFilter(predicate, builder, root, "userId", searchParams.getUserId());
     predicate = addDateRangeFilter(predicate, builder, root, "createdDate",
         searchParams.getSendingDateFrom(), searchParams.getSendingDateTo());
+    predicate = addEqualFilter(predicate, builder, root, "isRead", searchParams.getIsRead());
 
     return predicate;
   }

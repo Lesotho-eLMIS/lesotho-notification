@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,14 +40,22 @@ import org.openlmis.notification.service.NotificationChannel;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
+@Builder
 public final class NotificationDto implements Notification.Exporter, Notification.Importer {
+
+  private UUID id;
 
   private UUID userId;
 
+  
   @JsonProperty("messages")
+  @Builder.Default
   private Map<String, MessageDto> messageMap = new HashMap<>();
 
   private Boolean important;
+
+  @Builder.Default
+  private Boolean isRead = false;
 
   private ZonedDateTime createdDate;
   
@@ -75,5 +84,10 @@ public final class NotificationDto implements Notification.Exporter, Notificatio
           messageDto.getBody(), messageDto.getSubject(), messageDto.getTag()));
     }
     return messageList;
+  }
+  
+  @Override
+  public void setId(UUID id) {
+    this.id = id;
   }
 }
