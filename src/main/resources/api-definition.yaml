@@ -107,6 +107,12 @@ traits:
                   type: string
                   required: false
                   repeat: false
+              isRead:
+                  description: >
+                      Reduce the number of notifications in a response to those that were read
+                  type: boolean
+                  required: false
+                  repeat: false
           responses:
               200:
                   headers:
@@ -114,6 +120,40 @@ traits:
                   body:
                       application/json:
                           schema: notificationPage
+
+      /{id}:
+        uriParameters:
+          id:
+            displayName: id
+            type: string
+            required: true
+            repeat: false
+        put:
+            is: [ secured ]
+            description: Update a Notification.
+            body:
+              application/json:
+                schema: notification
+
+            responses:
+              200:
+                description: Notification updated.
+                headers:
+                  Keep-Alive:
+                body:
+                  application/json:
+                    schema: notification
+              400:
+                body:
+                  application/json:
+                      schema: localizedMessage
+                description: An error occured during request processing.
+
+              403:
+                description: User does not have permission to save a notification.
+                body:
+                  application/json:
+                      schema: localizedMessage  
   /userContactDetails:
       displayName: User Contact Details
       get:

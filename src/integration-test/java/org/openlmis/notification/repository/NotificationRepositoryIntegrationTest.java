@@ -108,7 +108,7 @@ public class NotificationRepositoryIntegrationTest
 
   @Test
   public void shouldFindAllNotificationsIfNoParamsWereSet() {
-    NotificationRepositoryCustom.SearchParams searchParams = new TestSearchParams(null, null, null);
+    NotificationRepositoryCustom.SearchParams searchParams = new TestSearchParams(null, null, null, null);
 
     Page<Notification> search = repository.search(searchParams, pageable);
     assertThat(search.getContent()).contains(notifications);
@@ -117,7 +117,7 @@ public class NotificationRepositoryIntegrationTest
   @Test
   public void shouldFindNotificationsByUserId() {
     NotificationRepositoryCustom.SearchParams searchParams =
-        new TestSearchParams(userId1, null, null);
+        new TestSearchParams(userId1, null, null, null);
 
     Page<Notification> search = repository.search(searchParams, pageable);
     assertThat(search.getContent()).contains(Arrays.copyOfRange(notifications, 0, 10));
@@ -127,7 +127,7 @@ public class NotificationRepositoryIntegrationTest
   public void shouldFindNotificationsAfterDate() {
     int startIndex = 14;
     NotificationRepositoryCustom.SearchParams searchParams =
-        new TestSearchParams(null, notifications[startIndex].getCreatedDate(), null);
+        new TestSearchParams(null, notifications[startIndex].getCreatedDate(), null, null);
 
     Page<Notification> search = repository.search(searchParams, pageable);
     assertThat(search.getContent())
@@ -139,7 +139,7 @@ public class NotificationRepositoryIntegrationTest
   public void shouldFindNotificationsBeforeDate() {
     int endIndex = 7;
     NotificationRepositoryCustom.SearchParams searchParams =
-        new TestSearchParams(null, null, notifications[endIndex].getCreatedDate());
+        new TestSearchParams(null, null, notifications[endIndex].getCreatedDate(), null);
 
     Page<Notification> search = repository.search(searchParams, pageable);
     assertThat(search.getContent())
@@ -153,7 +153,7 @@ public class NotificationRepositoryIntegrationTest
     int endIndex = 20;
     NotificationRepositoryCustom.SearchParams searchParams =
         new TestSearchParams(null, notifications[startIndex].getCreatedDate(),
-            notifications[endIndex].getCreatedDate());
+            notifications[endIndex].getCreatedDate(), null);
 
     Page<Notification> search = repository.search(searchParams, pageable);
     assertThat(search.getContent())
@@ -167,7 +167,7 @@ public class NotificationRepositoryIntegrationTest
     int endIndex = 20;
     NotificationRepositoryCustom.SearchParams searchParams =
         new TestSearchParams(userId2, notifications[startIndex].getCreatedDate(),
-            notifications[endIndex].getCreatedDate());
+            notifications[endIndex].getCreatedDate(), null);
 
     Page<Notification> search = repository.search(searchParams, pageable);
     assertThat(search.getContent())
@@ -183,5 +183,6 @@ public class NotificationRepositoryIntegrationTest
     private final UUID userId;
     private final ZonedDateTime sendingDateFrom;
     private final ZonedDateTime sendingDateTo;
+    private final Boolean isRead;
   }
 }

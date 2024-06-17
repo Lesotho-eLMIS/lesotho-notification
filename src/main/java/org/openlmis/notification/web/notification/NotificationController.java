@@ -17,9 +17,13 @@ package org.openlmis.notification.web.notification;
 
 import static org.openlmis.notification.i18n.MessageKeys.ERROR_USER_CONTACT_DETAILS_NOT_FOUND;
 import static org.openlmis.notification.i18n.MessageKeys.ERROR_USER_NOT_ACTIVE_OR_NOT_FOUND;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.commons.collections.MapUtils;
 import org.openlmis.notification.domain.Notification;
@@ -41,25 +45,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/notifications")
 public class NotificationController {
 
   private static final XLogger XLOGGER = XLoggerFactory.getXLogger(NotificationController.class);
+  public static final String ID_PATH_VARIABLE = "/{id}";
 
   @Autowired
   private NotificationDtoValidator notificationValidator;
@@ -89,7 +97,7 @@ public class NotificationController {
    *
    * @param notificationDto details of the message
    */
-  @PostMapping("/notifications")
+  @RequestMapping(method = POST)
   @ResponseStatus(HttpStatus.OK)
   public void sendNotification(@RequestBody @Validated NotificationDto notificationDto,
       BindingResult bindingResult) {
@@ -135,10 +143,67 @@ public class NotificationController {
     XLOGGER.exit();
   }
 
+  // /**
+  //  * Update a Notification.
+  //  *
+  //  * @param id Notification id.
+  //  * @param dto Notification dto.
+  //  * @return created Notification dto.
+  //  */
+  // @Transactional
+  // @RequestMapping(method = PUT)
+  // @PutMapping(ID_PATH_VARIABLE)
+  // public ResponseEntity<NotificationDto> updateNotification(@PathVariable UUID id,
+  //     @RequestBody NotificationDto dto) {
+  //   return notificationRepository.findById(id)
+  //     .map(existingNotification -> {
+  //       existingNotification.setIsRead(dto.getIsRead());
+  //       Notification updatedNotification = notificationRepository
+  //           .saveAndFlush(existingNotification);
+  //       NotificationDto updatedDto = notificationToDto(updatedNotification); 
+  //       return new ResponseEntity<>(updatedDto, HttpStatus.OK);
+  //     })
+  //     .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  // }
+  /**
+   * Update a Notification by setting the isRead attribute to true or false.
+   *
+   * @param id Notification id.
+   * @param dto Notification dto.
+   * @return created Notification dto.
+   */
+  @Transactional
+  @PutMapping(ID_PATH_VARIABLE)
+  @ResponseStatus(HttpStatus.OK)
+  @ResponseBody
+  public ResponseEntity<NotificationDto> updateNotification(@PathVariable UUID id,
+      @RequestBody NotificationDto dto) {
+    Optional<Notification> existingNotificationOpt = notificationRepository.findById(id);
+    
+    if (existingNotificationOpt.isPresent()) {
+      Notification existingNotification = existingNotificationOpt.get();
+      existingNotification.setIsRead(dto.getIsRead());
+      
+      Notification updatedNotification = notificationRepository
+          .saveAndFlush(existingNotification);
+      NotificationDto updateNotificationDto = notificationToDto(updatedNotification);
+      return new ResponseEntity<>(updateNotificationDto, HttpStatus.OK);
+    }
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);                                                   
+  }
+  
+  private NotificationDto notificationToDto(Notification notification) {
+    return NotificationDto.builder()
+      .userId(notification.getUserId())
+      .important(notification.getImportant())
+      .isRead(notification.getIsRead())
+      .build();
+  }
+
   /**
    * Get notifications.
    */
-  @GetMapping("/notifications")
+  @RequestMapping(method = GET)
   @ResponseStatus(HttpStatus.OK)
   public Page<NotificationDto> getNotificationCollection(
       @RequestParam MultiValueMap<String, String> queryParams,

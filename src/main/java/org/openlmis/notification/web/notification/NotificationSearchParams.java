@@ -34,9 +34,10 @@ public final class NotificationSearchParams implements NotificationRepositoryCus
   public static final String USER_ID = "userId";
   public static final String SENDING_DATE_FROM = "sendingDateFrom";
   public static final String SENDING_DATE_TO = "sendingDateTo";
+  public static final String IS_READ = "isRead";
 
   private static final List<String> ALL_PARAMETERS =
-      asList(USER_ID, SENDING_DATE_FROM, SENDING_DATE_TO);
+      asList(USER_ID, SENDING_DATE_FROM, SENDING_DATE_TO, IS_READ);
 
   private SearchParams queryParams;
 
@@ -84,6 +85,18 @@ public final class NotificationSearchParams implements NotificationRepositoryCus
       return null;
     }
     return queryParams.getZonedDateTime(SENDING_DATE_TO);
+  }
+
+  /**
+   * Gets {@link Boolean} for "isRead" key from params.
+   *
+   * @return Boolean value of isRead or null if params doesn't contain "isRead" key.
+   */
+  public Boolean getIsRead() {
+    if (!queryParams.containsKey(IS_READ)) {
+      return null;
+    }
+    return queryParams.getBoolean(IS_READ);
   }
 
   /**

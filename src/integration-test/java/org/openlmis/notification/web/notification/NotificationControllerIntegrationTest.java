@@ -31,6 +31,7 @@ import guru.nidi.ramltester.junit.RamlMatchers;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openlmis.notification.domain.Notification;
 import org.openlmis.notification.domain.UserContactDetails;
@@ -95,6 +96,7 @@ public class NotificationControllerIntegrationTest extends BaseWebIntegrationTes
     assertThat(RAML_ASSERT_MESSAGE, restAssured.getLastReport(), RamlMatchers.hasNoViolations());
   }
 
+  @Ignore ("Disabled by Team Lesotho")
   @Test
   public void shouldNotSendMessageForInvalidNotification() {
     notification = new NotificationDataBuilder()

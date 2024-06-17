@@ -33,6 +33,8 @@ public interface NotificationRepositoryCustom {
 
     ZonedDateTime getSendingDateTo();
 
+    Boolean getIsRead();
+
   }
 
 }
